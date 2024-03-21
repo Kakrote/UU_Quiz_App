@@ -1,2 +1,4 @@
+from utils import get_hotspot_ip_address
+
 PORT = 5002
-HOST = "192.168.137.1"
+HOST=get_hotspot_ip_address()

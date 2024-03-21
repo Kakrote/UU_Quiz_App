@@ -1,7 +1,6 @@
 import socket
 from settings import PORT, HOST
-
-
+from utils import get_hotspot_ip_address
 # Create a socket object
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     # Bind the socket to the host and port
@@ -11,6 +10,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     print("Server listening on", HOST, "port", PORT)
     # Accept a connection
     conn, addr = s.accept()
+    print(f"addr : {addr}")
     with conn:
         print('Connected by', addr)
         while True:
