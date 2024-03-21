@@ -1,6 +1,9 @@
 import socket
 from settings import PORT, HOST
 from utils import get_hotspot_ip_address
+
+print(f"PORT :{PORT}, HOST: {HOST}")
+raise Exception("BYE BYE")
 # Create a socket object
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
     # Bind the socket to the host and port
