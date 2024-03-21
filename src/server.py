@@ -1,8 +1,6 @@
 import socket
+from settings import PORT, HOST
 
-# Define the host and port to listen on
-HOST = 'localhost'  # Listen on all available interfaces
-PORT = 65432
 
 # Create a socket object
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
