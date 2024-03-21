@@ -1,4 +1,5 @@
 import netifaces
+import socket
 
 def get_hotspot_ip_address():
     """Retrieves the IP address of the active hotspot on Windows."""
