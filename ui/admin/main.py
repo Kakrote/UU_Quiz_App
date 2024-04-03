@@ -6,10 +6,13 @@ from frames.live import LiveFrame
 from frames.questions import QuestionsFrame
 from frames.participants import ParticipantsFrame
 from frames.settings import SettingsFrame
+from PIL import Image
+import os
+
 
 class SidePanel(ctk.CTkFrame):
     panelItems = list()
-    activeItemColor = "#2345ac"
+    activeItemColor = ("#bbb", "#111")
 
     activeB = None
     b_home = None
@@ -17,36 +20,73 @@ class SidePanel(ctk.CTkFrame):
     b_questions = None
     b_participants = None
     b_settings = None
-    
+    commons = {
+        "anchor": "w",
+        "height": 40,
+        "width":180,
+        "corner_radius": 0,
+        "fg_color": "transparent",
+        "hover_color": ("gray70", "gray30"),
+        "border_spacing":10,
+        "text_color":("gray10", "gray90")
+    }
+    icons = dict()
+    images = dict()
+
+    def load_icon(self, name):
+        self.images[name] = Image.open(os.path.join("ui","admin", "icons", name))
+        return ctk.CTkImage(    
+            self.images[name],
+            size=(20, 20)
+        )
+
+    def button(self, text, cmd,icons:tuple):
+        light, dark = icons
+        img = ctk.CTkImage(
+            light_image=Image.open(os.path.join("ui","admin", "icons", light)),
+            dark_image=Image.open(os.path.join("ui","admin", "icons", dark)),
+            size=(20,20)
+        )
+        return ctk.CTkButton(
+            self,
+            text=text, 
+            image=img,
+            command=cmd,
+            **self.commons
+        )
+
+    def init_icons(self):
+        dir = os.path.join("ui", 'admin', 'icons')
+        icons = os.listdir(dir)
+        self.icons = dict()
+        for icon in icons:
+            self.icons[icon] = self.load_icon(icon)
+
     def __init__(self, master, **kwargs):
         super().__init__(master=master, **kwargs)
 
         self.grid_columnconfigure(0, weight=1)
 
-        commons = {
-            "master": self,
-            "anchor":"w",
-            "height":40, 
-            "corner_radius":0,
-            "fg_color":"transparent"
-        }
-        self.b_home = ctk.CTkButton(text="HOME", width=150,command=self.click_home,**commons)
-        self.b_live = ctk.CTkButton(text="LIVE", command=self.click_live,**commons)
-        self.b_questions = ctk.CTkButton(text="QUESTIONS", command=self.click_questions,**commons)
-        self.b_participants = ctk.CTkButton(text="PARTICIPANTS", command=self.click_participants,**commons)
-        self.b_settings = ctk.CTkButton(text="SETTINGS", command=self.click_settings,**commons)
+        # self.init_icons() # load icon images into memory
 
-        self.b_home.configure(fg_color=self.activeItemColor)
-        self.activeB = self.b_home
+        self.b_home = self.button("HOME",self.click_home, ("home_dark.png", "home_light.png"))
+        self.b_live = self.button("LIVE",self.click_live, ("live_dark.png", "live_light.png"))
+        self.b_questions = self.button("QUESTIONS",self.click_questions, ("questions_dark.png", "questions_light.png"))
+        self.b_participants = self.button("PARTICIPANTS",self.click_participants, ("home_dark.png", "home_light.png"))
+        self.b_settings = self.button("SETTINGS",self.click_settings, ("home_dark.png", "home_light.png"))
+
+        # self.b_home.configure(fg_color=self.activeItemColor)
+        # self.activeB = self.b_home
+        self.setActiveItem(self.b_home)
 
     def show(self):
-        self.b_home.grid(row=0, column=0, sticky="we", pady=(10,0))
+        self.b_home.grid(row=0, column=0, sticky="we", pady=(10, 0))
         self.b_live.grid(row=1, column=0, sticky="we")
         self.b_questions.grid(row=2, column=0, sticky="we")
         self.b_participants.grid(row=3, column=0, sticky="we")
         self.b_settings.grid(row=4, column=0, sticky="we")
 
-        self.grid(row=1, column=0, stick='nsw')
+        self.grid(row=1, column=0, stick="nsw")
 
     def click_home(self):
         app.mainPanel.setActiveFrame(app.mainPanel.homeFrame)
@@ -68,10 +108,13 @@ class SidePanel(ctk.CTkFrame):
         app.mainPanel.setActiveFrame(app.mainPanel.settingsFrame)
         self.setActiveItem(self.b_settings)
 
-    def setActiveItem(self,item):
-        self.activeB.configure(fg_color="transparent")
+    def setActiveItem(self, item):
+        if self.activeB is not None:
+            self.activeB.configure(fg_color="transparent")
+            self.activeB.configure(hover_color=self.commons["hover_color"])
         self.activeB = item
         self.activeB.configure(fg_color=self.activeItemColor)
+        self.activeB.configure(hover_color=self.activeItemColor)
 
 
 class MainPanel(ctk.CTkFrame):
@@ -102,7 +145,8 @@ class MainPanel(ctk.CTkFrame):
 
     def show(self):
         self.activeFrame.show()
-        self.grid(row=1, column=1, stick='nswe')
+        self.grid(row=1, column=1, stick="nswe")
+
 
 class TopBar(ctk.CTkFrame):
     def __init__(self, master, **kwargs):
@@ -112,12 +156,14 @@ class TopBar(ctk.CTkFrame):
 
     def show(self):
         self.l_title.pack(fill="x")
-        self.grid(row=0, column=0, stick='we', columnspan=2)
+        self.grid(row=0, column=0, stick="we", columnspan=2)
+
 
 class App(ctk.CTk):
     HEIGHT = 400
     WIDTH = 800
     side_panel_width = 300
+
     def __init__(self):
         super().__init__()
         self.geometry(f"{self.WIDTH}x{self.HEIGHT}")
@@ -134,6 +180,7 @@ class App(ctk.CTk):
         self.sidePanel.show()
         self.mainPanel.show()
         self.mainloop()
+
 
 app = None
 if __name__ == "__main__":

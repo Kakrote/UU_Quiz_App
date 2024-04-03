@@ -4,7 +4,6 @@ from .utils import rc
 class HomeFrame(ctk.CTkFrame):
     def __init__(self, master, **kw):
         super().__init__(master=master, fg_color=rc(), **kw)
-        
         self.label = ctk.CTkLabel(self, text="HOME")
 
     def show(self):
