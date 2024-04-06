@@ -9,7 +9,8 @@ from frames.settings import SettingsFrame
 from PIL import Image
 import os
 
-
+from tktooltip import ToolTip
+from CTkToolTip import *
 class SidePanel(ctk.CTkFrame):
     panelItems = list()
     activeItemColor = ("#bbb", "#111")
@@ -22,13 +23,13 @@ class SidePanel(ctk.CTkFrame):
     b_settings = None
     commons = {
         "anchor": "w",
-        "height": 40,
-        "width":180,
-        "corner_radius": 0,
+        "height": 30,
+        "width":0,
+        "corner_radius": 5,
         "fg_color": "transparent",
-        "hover_color": ("gray70", "gray30"),
+        "hover_color": ("gray70", "#333"),
         "border_spacing":10,
-        "text_color":("gray10", "gray90")
+        "text_color":("gray10", "gray90"),
     }
     icons = dict()
     images = dict()
@@ -47,13 +48,16 @@ class SidePanel(ctk.CTkFrame):
             dark_image=Image.open(os.path.join("ui","admin", "icons", dark)),
             size=(20,20)
         )
-        return ctk.CTkButton(
+        btn =  ctk.CTkButton(
             self,
-            text=text, 
+            # text="   "+text, 
+            text="",
             image=img,
             command=cmd,
             **self.commons
         )
+        CTkToolTip(btn, message=text, delay=0.1, corner_radius=5)    
+        return btn
 
     def init_icons(self):
         dir = os.path.join("ui", 'admin', 'icons')
@@ -71,20 +75,24 @@ class SidePanel(ctk.CTkFrame):
 
         self.b_home = self.button("HOME",self.click_home, ("home_dark.png", "home_light.png"))
         self.b_live = self.button("LIVE",self.click_live, ("live_dark.png", "live_light.png"))
-        self.b_questions = self.button("QUESTIONS",self.click_questions, ("questions_dark.png", "questions_light.png"))
-        self.b_participants = self.button("PARTICIPANTS",self.click_participants, ("home_dark.png", "home_light.png"))
-        self.b_settings = self.button("SETTINGS",self.click_settings, ("home_dark.png", "home_light.png"))
+        self.b_questions = self.button("QUESTIONS",self.click_questions, ("database_dark.png", "database_light.png"))
+        self.b_participants = self.button("PARTICIPANTS",self.click_participants, ("users_dark.png", "users_light.png"))
+        self.b_settings = self.button("SETTINGS",self.click_settings, ("settings_dark.png", "settings_light.png"))
 
         # self.b_home.configure(fg_color=self.activeItemColor)
         # self.activeB = self.b_home
         self.setActiveItem(self.b_home)
 
     def show(self):
-        self.b_home.grid(row=0, column=0, sticky="we", pady=(10, 0))
-        self.b_live.grid(row=1, column=0, sticky="we")
-        self.b_questions.grid(row=2, column=0, sticky="we")
-        self.b_participants.grid(row=3, column=0, sticky="we")
-        self.b_settings.grid(row=4, column=0, sticky="we")
+        commons = {
+            "padx":5,
+            "pady":2
+        }
+        self.b_home.grid(row=0, column=0, sticky="we", **commons)
+        self.b_live.grid(row=1, column=0, sticky="we", **commons)
+        self.b_questions.grid(row=2, column=0, sticky="we", **commons)
+        self.b_participants.grid(row=3, column=0, sticky="we", **commons)
+        self.b_settings.grid(row=4, column=0, sticky="we", **commons)
 
         self.grid(row=1, column=0, stick="nsw")
 
